@@ -1,12 +1,8 @@
 {
   "name": "console-stamp",
   "main": "index.js",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "scripts": {
-    "test": "tap --no-check-coverage -R spec test/*.js",
-    "test:watch": "nodemon --exec npm test",
-    "t:w": "npm run test:watch",
-    "preversion": "npm test",
     "examples": "node examples/index || true"
   },
   "engines": {
@@ -57,6 +53,10 @@
     {
       "name": "Alexey Zakhlestin",
       "url": "https://github.com/indeyets"
+    },
+    {
+      "name": "Shirley de Jong",
+      "url": "https://github.com/shirleydejong"
     }
   ],
   "description": "Patch NodeJS console methods in order to add timestamp information by pattern",
@@ -73,12 +73,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "dateformat": "^4.6.3"
+    "luxon": "^3.3.0",
+    "picocolors": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.31",
-    "nodemon": "^2.0.16",
-    "tap": "^16.3.3"
+    "@types/node": "^20.3.3",
+    "nodemon": "^2.0.22"
   }
 }

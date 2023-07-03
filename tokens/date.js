@@ -1,4 +1,8 @@
-const dateformat = require( 'dateformat' );
+//const dateformat = require( 'dateformat' );
+const DateTime = require( 'luxon' ).DateTime;
 module.exports = ( { params: [format, utc = false, date = new Date] } ) => {
-    return `[${dateformat( date, format, utc )}]`;
+    if( utc ) {
+        return DateTime.fromJSDate( date ).setZone('utc').toFormat( format ) 
+    }
+    return DateTime.fromJSDate( date ).local().toFormat( format ) 
 }

@@ -1,4 +1,10 @@
 const { checkLogLevel, generateConfig, generatePrefix, selectOutputStream, FakeStream } = require( './lib/utils.js' );
+const inspector = require('node:inspector');
+
+function isInDebugMode() {
+    return inspector.url() !== undefined;
+}
+
 let consoleStamp = ( con, options = {} ) => {
 
     if ( con.__patched ) {
@@ -6,7 +12,7 @@ let consoleStamp = ( con, options = {} ) => {
     }
 
     const helperConsoleStream = new FakeStream();
-    const helperConsole = new console.Console( helperConsoleStream, helperConsoleStream );
+    const helperConsole = new console.Console({ stdout: helperConsoleStream, stderr: helperConsoleStream, colorMode: true });
 
     const config = generateConfig( options );
     const include = config.include.filter( m => typeof con[m] === 'function' );
@@ -18,25 +24,28 @@ let consoleStamp = ( con, options = {} ) => {
     include.forEach( method => {
         const stream = selectOutputStream( method, config );
         const trg = con[method];
-
-        con[method] = new Proxy( trg, {
-            apply: ( target, context, args ) => {
-                if ( checkLogLevel( config, method ) ) {
+        
+        if ( checkLogLevel( config, method ) ) {
+            con[method] = new Proxy( trg, {
+                apply: ( target, context, args ) => {
+                
                     helperConsole.log.apply( context, args );
-                    // TODO: custom msg vs table will not work
-                    let outputMessage = `${generatePrefix( method, config, helperConsoleStream.last_msg )} `;
-                    if(method === 'table'){
-                        outputMessage += '\n';
-                        helperConsole.table.apply( context, args);
-                        outputMessage += helperConsoleStream.last_msg;
-                    }else if(!( config.preventDefaultMessage || /:msg\b/.test( config.format ) )){
-                        outputMessage += `${helperConsoleStream.last_msg}`;
+                    
+                    if( !( config.preventDefaultMessage || /:msg\b/.test( config.format ) )) {
+                        stream.write(`${generatePrefix( method, config )} `);
+                        stream.write( helperConsoleStream.last_msg );
+                        
+                    } else {
+                        stream.write(`${generatePrefix( method, config, helperConsoleStream.last_msg )}`);
+                        
                     }
-                    outputMessage += '\n';
-                    stream.write( outputMessage );
+                    if( isInDebugMode() && inspector.console?.[method] ) {
+                        inspector.console[method].apply( context, args );
+                        
+                    }
                 }
-            }
-        } );
+            });
+        }
 
         con.__patched = true
     } );
