@@ -15,7 +15,9 @@ This module lets you take control over the output from `console` logging methods
 
 ### Install
 ```console
-npm install console-stamp
+npm i shirleydejong/node-console-stamp
+or
+yarn add shirleydejong/node-console-stamp
 ```
 
 ### Patching the console
