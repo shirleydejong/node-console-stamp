@@ -25,11 +25,10 @@ let consoleStamp = ( con, options = {} ) => {
         const stream = selectOutputStream( method, config );
         const trg = con[method];
         
-        if ( checkLogLevel( config, method ) ) {
-            con[method] = new Proxy( trg, {
-                apply: ( target, context, args ) => {
-                
-                    helperConsole.log.apply( context, args );
+        con[method] = new Proxy( trg, {
+            apply: ( target, context, args ) => {
+                helperConsole.log.apply( context, args );
+                if ( checkLogLevel( config, method ) ) {
                     
                     if( !( config.preventDefaultMessage || /:msg\b/.test( config.format ) )) {
                         stream.write(`${generatePrefix( method, config )} `);
@@ -44,9 +43,8 @@ let consoleStamp = ( con, options = {} ) => {
                         
                     }
                 }
-            });
-        }
-
+            }
+        });
         con.__patched = true
     } );
 

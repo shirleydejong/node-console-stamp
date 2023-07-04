@@ -1,4 +1,3 @@
-//const dateformat = require( 'dateformat' );
 const DateTime = require( 'luxon' ).DateTime;
 module.exports = ( { params: [format, utc = false, date = new Date] } ) => {
     if( utc ) {
