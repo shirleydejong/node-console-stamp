@@ -11,10 +11,10 @@ let consoleStamp = ( con, options = {} ) => {
         con.reset();
     }
 
-    const helperConsoleStream = new FakeStream();
-    const helperConsole = new console.Console({ stdout: helperConsoleStream, stderr: helperConsoleStream, colorMode: true });
-
     const config = generateConfig( options );
+    const helperConsoleStream = new FakeStream();
+    const helperConsole = new console.Console({ stdout: helperConsoleStream, stderr: helperConsoleStream, colorMode: config.colorMode });
+
     const include = config.include.filter( m => typeof con[m] === 'function' );
 
     const org = {};
