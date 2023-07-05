@@ -31,6 +31,7 @@ declare function consoleStamp(console: Console, options?: {
     stdout?: NodeJS.WriteStream | SpyStream
     stderr?: NodeJS.WriteStream | SpyStream
     preventDefaultMessage?: boolean
+    colorMode: boolean
 }): void;
 
 export default consoleStamp;
